@@ -1,13 +1,15 @@
 const {User} = require("../models")
+const { hashPassword } = require("../utils/bcrypt")
 
 
 
 const register = async({username,password})=>{
     const users = await User.findOne({where:{username}})
+    const hash = await hashPassword(password)
     if(users){
         throw new Error("username already exists")
     }
-    const user = await User.create({username,password})
+    const user = await User.create({username,password:hash})
     return user
 
 }

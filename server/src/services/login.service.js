@@ -1,4 +1,5 @@
 const {User} = require('../models')
+const { checkPassword } = require('../utils/bcrypt')
 const { encodePayload } = require('../utils/jwt')
 
 const login = async({username,password})=>{
@@ -6,7 +7,8 @@ const login = async({username,password})=>{
     if(!user){
         throw new Error("User  not found")
     }
-    if(password !==user.password){
+    const check = await checkPassword(password,user.password)
+    if(!check){
         throw new Error("password incorrect")
 
     }
