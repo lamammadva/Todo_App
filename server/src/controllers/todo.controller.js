@@ -1,36 +1,38 @@
 const {todoServices} = require("../services/")
 
-const getTodo = async(req,res) => {
+const getTodo = async(req,res,next) => {
     const {user}= req
    try {
          const data = await todoServices.getTodo(user.id)
         res.status(200).json(data)
    } catch (error) {
-        res.status(404).json({message:error?.message})
+    next(error)
    }
 
 }
-const getTodoById = async (req, res) => {
+const findTodo = async (req, res, next) => {
+    const {user} = req
     try {
-        const data = await todoServices.getTodoById(req.params.id)
+        const data = await todoServices.findTodo(req.params.id,user.id)
         res.status(200).json(data)
     } catch (error) {
-        res.status(409).json({message:error?.message})
+        next(error)
+
         
     }
 }
-const createTodo = async (req, res) => {
+const createTodo = async (req, res,next) => {
     const {user} =req
     try {
         const params = {...req.body,userId:user.id}
         const data = await todoServices.createTodo(params)
         res.status(201).json(data)
     } catch (error) {
-        res.status(400).json({message:"Invalid request"})
+        next(error)
         
     }
 }
-const updateTodo = async (req, res) => {
+const updateTodo = async (req, res,next) => {
     try {
         const {user} = req
         const params = {...req.body,id:req.params.id,userId:user.id}
@@ -39,19 +41,19 @@ const updateTodo = async (req, res) => {
         
         res.status(200).json(data)
     } catch (error) {
-        res.status(400).json({message:error?.message})
+        next(error)
     }
 
 
 }
-const deleteTodo = async (req, res) => {
+const deleteTodo = async (req, res,next) => {
     const {user} = req
     const {id} = req.params
     try {
         await todoServices.deleteTodo({id,userId:user.id})
         res.status(200).json({message:"Todo deleted"})
     } catch (error) {
-        res.status(404).json({message:error?.message})
+        next(error)
         
     }
 
@@ -61,5 +63,5 @@ module.exports = {
     createTodo,
     updateTodo,
     deleteTodo,
-    getTodoById
+    findTodo
 };
